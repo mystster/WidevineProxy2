@@ -11,6 +11,11 @@
         <img id="textImage" src="../images/proxy_text.png" alt="ProxyText" width="200"/>
     </div>
     <fieldset>
+        <legend>Keys</legend>
+        <button type="button" id="clear">Clear</button>
+        <div id="key-container"></div>
+    </fieldset>
+    <fieldset>
         <legend>Settings</legend>
         <div id="settings">
             <!-- Enabled -->
@@ -35,6 +40,21 @@
                 <label for="remote_select">Remote CDM</label><br>
             </div>
         </div>
+        <fieldset id="command-options">
+            <legend>Command options</legend>
+            <input type="checkbox" id="use-shaka">
+            <label for="use-shaka"> Use Shaka Packager</label><br>
+            <label for="downloader-name">Executable name: </label>
+            <input type="text" class="text-box" id="downloader-name"><br>
+            <input type="checkbox" id="set-filename-from-title">
+            <label for="set-filename-from-title"> Set Filename from Title</label><br>
+            <input type="checkbox" id="use-select-video">
+            <label for="use-select-video"> Select Video: </label>
+            <input type="text" class="text-box" id="select-video-param"><br>
+            <input type="checkbox" id="use-select-audio">
+            <label for="use-select-audio"> Select Audio: </label>
+            <input type="text" class="text-box" id="select-audio-param">
+        </fieldset>
         <fieldset id="wvd">
             <legend>Widevine Device</legend>
             <button type="button" id="fileInput">Choose File</button>
@@ -53,27 +73,7 @@
                 <select id="remote-combobox"></select>
             </label>
         </fieldset>
-        <fieldset id="command-options">
-            <legend>Command options</legend>
-            <input type="checkbox" id="use-shaka">
-            <label for="use-shaka"> Use Shaka Packager</label><br>
-            <label for="downloader-name">Executable name: </label>
-            <input type="text" class="text-box" id="downloader-name"><br>
-            <input type="checkbox" id="set-filename-from-title">
-            <label for="set-filename-from-title"> Set Filename from Title</label><br>
-            <input type="checkbox" id="use-select-video">
-            <label for="use-select-video"> Select Video: </label>
-            <input type="text" class="text-box" id="select-video-param"><br>
-            <input type="checkbox" id="use-select-audio">
-            <label for="use-select-audio"> Select Audio: </label>
-            <input type="text" class="text-box" id="select-audio-param">
-        </fieldset>
         <button type="button" id="export">Export Logs</button>
-    </fieldset>
-    <fieldset>
-        <legend>Keys</legend>
-        <button type="button" id="clear">Clear</button>
-        <div id="key-container"></div>
     </fieldset>
 </body>
 </html>
