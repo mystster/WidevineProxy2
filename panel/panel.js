@@ -149,10 +149,10 @@ clear.addEventListener('click', async function() {
     key_container.innerHTML = "";
 });
 
-async function createCommand(json, key_string) {
+async function createCommand(json, key_string, title) {
     const metadata = JSON.parse(json);
     const header_string = Object.entries(metadata.headers).map(([key, value]) => `-H "${key}: ${value.replace(/"/g, "'")}"`).join(' ');
-    return `${await SettingsManager.getExecutableName()} "${metadata.url}" ${header_string} ${key_string} ${await SettingsManager.getUseShakaPackager() ? "--use-shaka-packager " : ""}-M format=mkv${await SettingsManager.getSetFilenameFromTitle() ? " --save-name ".concat(document.title) : ""}${await SettingsManager.getUseSelectVideo() ? " --select-video ".concat(SettingsManager.getSelectVideoParam()) : ""}${await SettingsManager.getUseSelectAudio() ? " --select-Audio ".concat(SettingsManager.getSelectAudioParam()) : ""}`;
+    return `${await SettingsManager.getExecutableName()} "${metadata.url}" ${header_string} ${key_string} ${await SettingsManager.getUseShakaPackager() ? "--use-shaka-packager " : ""}-M format=mkv${await SettingsManager.getSetFilenameFromTitle() && title ? " --save-name ".concat('"', title, '"') : ""}${await SettingsManager.getUseSelectVideo() ? " --select-video ".concat(await SettingsManager.getSelectVideoParam()) : ""}${await SettingsManager.getUseSelectAudio() ? " --select-Audio ".concat(await SettingsManager.getSelectAudioParam()) : ""}`;
 }
 
 async function appendLog(result) {
@@ -166,7 +166,7 @@ async function appendLog(result) {
         <button class="toggleButton">+</button>
         <div class="expandableDiv collapsed">
             <label class="always-visible right-bound">
-                Title:<input type="text" class="text-box" value="${document.title}">
+                Title:<input type="text" class="text-box" value="${result.title}">
             </label>
             <label class="always-visible right-bound">
                 URL:<input type="text" class="text-box" value="${result.url}">
@@ -199,13 +199,13 @@ async function appendLog(result) {
 
         const select = logContainer.querySelector("#manifest");
         select.addEventListener('change', async () => {
-            command.value = await createCommand(select.value, key_string);
+            command.value = await createCommand(select.value, key_string, result.title);
         });
         result.manifests.forEach((manifest) => {
             const option = new Option(`[${manifest.type}] ${manifest.url}`, JSON.stringify(manifest));
             select.add(option);
         });
-        command.value = await createCommand(select.value, key_string);
+        command.value = await createCommand(select.value, key_string, result.title);
 
         const manifest_copy = logContainer.querySelector('.manifest-copy');
         manifest_copy.addEventListener('click', () => {

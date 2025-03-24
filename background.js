@@ -45,7 +45,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
     ['requestHeaders', chrome.webRequest.OnSendHeadersOptions.EXTRA_HEADERS].filter(Boolean)
 );
 
-async function parseClearKey(body, sendResponse, tab_url) {
+async function parseClearKey(body, sendResponse, tab_url, tab_title) {
     const clearkey = JSON.parse(atob(body));
 
     const formatted_keys = clearkey["keys"].map(key => ({
@@ -61,12 +61,13 @@ async function parseClearKey(body, sendResponse, tab_url) {
         return;
     }
 
-    console.log("[WidevineProxy2]", "CLEARKEY KEYS", formatted_keys, tab_url);
+    console.log("[WidevineProxy2]", "CLEARKEY KEYS", formatted_keys, tab_url, tab_title);
     const log = {
         type: "CLEARKEY",
         pssh_data: pssh_data,
         keys: formatted_keys,
         url: tab_url,
+        title: tab_title,
         timestamp: Math.floor(Date.now() / 1000),
         manifests: manifests.has(tab_url) ? manifests.get(tab_url) : []
     }
@@ -117,7 +118,7 @@ async function generateChallenge(body, sendResponse) {
     sendResponse(uint8ArrayToBase64(challenge));
 }
 
-async function parseLicense(body, sendResponse, tab_url) {
+async function parseLicense(body, sendResponse, tab_url, tab_title) {
     const license = base64toUint8Array(body);
     const signed_license_message = SignedMessage.decode(license);
 
@@ -139,12 +140,13 @@ async function parseLicense(body, sendResponse, tab_url) {
     const keys = await loadedSession.parseLicense(license);
     const pssh = loadedSession.getPSSH();
 
-    console.log("[WidevineProxy2]", "KEYS", JSON.stringify(keys), tab_url);
+    console.log("[WidevineProxy2]", "KEYS", JSON.stringify(keys), tab_url, tab_title);
     const log = {
         type: "WIDEVINE",
         pssh_data: pssh,
         keys: keys,
         url: tab_url,
+        title: tab_title,
         timestamp: Math.floor(Date.now() / 1000),
         manifests: manifests.has(tab_url) ? manifests.get(tab_url) : []
     }
@@ -196,7 +198,7 @@ async function generateChallengeRemote(body, sendResponse) {
     sendResponse(challenge_b64);
 }
 
-async function parseLicenseRemote(body, sendResponse, tab_url) {
+async function parseLicenseRemote(body, sendResponse, tab_url, tab_title) {
     const license = base64toUint8Array(body);
     const signed_license_message = SignedMessage.decode(license);
 
@@ -236,12 +238,13 @@ async function parseLicenseRemote(body, sendResponse, tab_url) {
 
     const keys = returned_keys.map(({ key, key_id }) => ({ k: key, kid: key_id }));
 
-    console.log("[WidevineProxy2]", "KEYS", JSON.stringify(keys), tab_url);
+    console.log("[WidevineProxy2]", "KEYS", JSON.stringify(keys), tab_url, tab_title);
     const log = {
         type: "WIDEVINE",
         pssh_data: session_id.pssh,
         keys: keys,
         url: tab_url,
+        title: tab_title,
         timestamp: Math.floor(Date.now() / 1000),
         manifests: manifests.has(tab_url) ? manifests.get(tab_url) : []
     }
@@ -255,6 +258,7 @@ async function parseLicenseRemote(body, sendResponse, tab_url) {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     (async () => {
         const tab_url = sender.tab ? sender.tab.url : null;
+        const tab_title = sender.tab ? sender.tab.title : null;
 
         switch (message.type) {
             case "REQUEST":
@@ -291,16 +295,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 }
 
                 try {
-                    await parseClearKey(message.body, sendResponse, tab_url);
+                    await parseClearKey(message.body, sendResponse, tab_url, tab_title);
                     return;
                 } catch (e) {
                     const device_type = await SettingsManager.getSelectedDeviceType();
                     switch (device_type) {
                         case "WVD":
-                            await parseLicense(message.body, sendResponse, tab_url);
+                            await parseLicense(message.body, sendResponse, tab_url, tab_title);
                             break;
                         case "REMOTE":
-                            await parseLicenseRemote(message.body, sendResponse, tab_url);
+                            await parseLicenseRemote(message.body, sendResponse, tab_url, tab_title);
                             break;
                     }
                     return;
