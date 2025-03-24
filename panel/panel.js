@@ -202,7 +202,7 @@ async function appendLog(result) {
             command.value = await createCommand(select.value, key_string, result.title);
         });
         result.manifests.forEach((manifest) => {
-            const option = new Option(`[${manifest.type}] ${manifest.url}`, JSON.stringify(manifest), manifest.type.startsWith('HLS'), manifest.type.startsWith('HLS'));
+            const option = new Option(`[${manifest.type}] ${manifest.url}`, JSON.stringify(manifest), manifest.type.startsWith('DASH'), manifest.type.startsWith('DASH'));
             select.add(option);
         });
         command.value = await createCommand(select.value, key_string, result.title);
