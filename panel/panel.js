@@ -118,7 +118,6 @@ downloader_name.addEventListener('input', async function (event){
 
 const set_filename_from_title = document.getElementById('set-filename-from-title');
 set_filename_from_title.addEventListener('change', async function () {
-    console.log("change set filename from title");
     await SettingsManager.saveSetFilenameFromTitle(set_filename_from_title.checked);
 });
 
@@ -129,7 +128,6 @@ use_select_video.addEventListener('change', async function (){
 
 const select_video_param = document.getElementById('select-video-param');
 select_video_param.addEventListener('input', async function (event) {
-    console.log('select video change', event);
     await SettingsManager.saveSelectVideoParam(select_video_param.value);
 });
 
@@ -140,7 +138,6 @@ use_select_audio.addEventListener('change', async function () {
 
 const select_audio_param = document.getElementById('select-audio-param');
 select_audio_param.addEventListener('input', async function (event) {
-    console.log('select audio change', event);
     await SettingsManager.saveSelectAudioParam(select_audio_param.value);
 });
 // =================================================
