@@ -343,6 +343,50 @@ export class SettingsManager {
         const result = await AsyncSyncStorage.getStorage(["exe_name"]);
         return result["exe_name"] ?? "N_m3u8DL-RE";
     }
+
+    static async getSetFilenameFromTitle() {
+        const result = await AsyncSyncStorage.getStorage(["set_filename_from_title"]);
+        return result["set_filename_from_title"] ?? false;
+    }
+
+    static async saveSetFilenameFromTitle(set_filename_from_title) {
+        await AsyncSyncStorage.setStorage({ set_filename_from_title: set_filename_from_title });
+    }
+
+    static async getUseSelectVideo() {
+        const result = await AsyncSyncStorage.getStorage(["use_select_video"]);
+        return result["use_select_video"] ?? false;
+    }
+
+    static async saveUseSelectVideo(use_select_video) {
+        await AsyncSyncStorage.setStorage({ use_select_video: use_select_video });
+    }
+
+    static async getSelectVideoParam() {
+        const result = await AsyncSyncStorage.getStorage(["select_video_param"]);
+        return result["select_video_param"] ?? "best";
+    }
+
+    static async saveSelectVideoParam(select_video_param) {
+        await AsyncSyncStorage.setStorage({ select_video_param: select_video_param });
+    }
+
+    static async getUseSelectAudio() {
+        const result = await AsyncSyncStorage.getStorage(["use_select_audio"]);
+        return result["use_select_audio"] ?? false;
+    }
+
+    static async saveUseSelectAudio(use_select_audio) {
+        await AsyncSyncStorage.setStorage({ use_select_audio: use_select_audio });
+    }
+
+    static async getSelectAudioParam() {
+        const result = await AsyncSyncStorage.getStorage(["select_audio_param"]);
+        return result["select_audio_param"] ?? "best";
+    }
+    static async saveSelectAudioParam(select_audio_param) {
+        await AsyncSyncStorage.setStorage({ select_audio_param: select_audio_param });
+    }
 }
 
 export function intToUint8Array(num) {

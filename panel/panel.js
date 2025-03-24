@@ -113,8 +113,35 @@ use_shaka.addEventListener('change', async function (){
 
 const downloader_name = document.getElementById('downloader-name');
 downloader_name.addEventListener('input', async function (event){
-    console.log("input change", event);
     await SettingsManager.saveExecutableName(downloader_name.value);
+});
+
+const set_filename_from_title = document.getElementById('set-filename-from-title');
+set_filename_from_title.addEventListener('change', async function () {
+    console.log("change set filename from title");
+    await SettingsManager.saveSetFilenameFromTitle(set_filename_from_title.checked);
+});
+
+const use_select_video = document.getElementById('use-select-video');
+use_select_video.addEventListener('change', async function (){
+    await SettingsManager.saveUseSelectVideo(use_select_video.checked);
+});
+
+const select_video_param = document.getElementById('select-video-param');
+select_video_param.addEventListener('input', async function (event) {
+    console.log('select video change', event);
+    await SettingsManager.saveSelectVideoParam(select_video_param.value);
+});
+
+const use_select_audio = document.getElementById('use-select-audio');
+use_select_audio.addEventListener('change', async function () {
+    await SettingsManager.saveUseSelectAudio(use_select_audio.checked);
+});
+
+const select_audio_param = document.getElementById('select-audio-param');
+select_audio_param.addEventListener('input', async function (event) {
+    console.log('select audio change', event);
+    await SettingsManager.saveSelectAudioParam(select_audio_param.value);
 });
 // =================================================
 
@@ -128,7 +155,7 @@ clear.addEventListener('click', async function() {
 async function createCommand(json, key_string) {
     const metadata = JSON.parse(json);
     const header_string = Object.entries(metadata.headers).map(([key, value]) => `-H "${key}: ${value.replace(/"/g, "'")}"`).join(' ');
-    return `${await SettingsManager.getExecutableName()} "${metadata.url}" ${header_string} ${key_string} ${await SettingsManager.getUseShakaPackager() ? "--use-shaka-packager " : ""}-M format=mkv`;
+    return `${await SettingsManager.getExecutableName()} "${metadata.url}" ${header_string} ${key_string} ${await SettingsManager.getUseShakaPackager() ? "--use-shaka-packager " : ""}-M format=mkv${await SettingsManager.getSetFilenameFromTitle() ? " --save-name ".concat(document.title) : ""}${await SettingsManager.getUseSelectVideo() ? " --select-video ".concat(SettingsManager.getSelectVideoParam()) : ""}${await SettingsManager.getUseSelectAudio() ? " --select-Audio ".concat(SettingsManager.getSelectAudioParam()) : ""}`;
 }
 
 async function appendLog(result) {
@@ -142,8 +169,14 @@ async function appendLog(result) {
         <button class="toggleButton">+</button>
         <div class="expandableDiv collapsed">
             <label class="always-visible right-bound">
+                Title:<input type="text" class="text-box" value="${document.title}">
+            </label>
+            <label class="always-visible right-bound">
                 URL:<input type="text" class="text-box" value="${result.url}">
             </label>
+            ${result.manifests.length > 0 ? `<label class="always-visible right-bound command-copy">
+                <a href="#" title="Click to copy">Cmd:</a><input type="text" id="command" class="text-box">
+            </label>` : ''}
             <label class="expanded-only right-bound">
             <label class="expanded-only right-bound">
                 PSSH:<input type="text" class="text-box" value="${result.pssh_data}">
@@ -156,9 +189,6 @@ async function appendLog(result) {
             </label>
             ${result.manifests.length > 0 ? `<label class="expanded-only right-bound manifest-copy">
                 <a href="#" title="Click to copy">Manifest:</a><select id="manifest" class="text-box"></select>
-            </label>
-            <label class="expanded-only right-bound command-copy">
-                <a href="#" title="Click to copy">Cmd:</a><input type="text" id="command" class="text-box">
             </label>` : ''}
         </div>`;
 
@@ -231,6 +261,12 @@ document.addEventListener('DOMContentLoaded', async function () {
     SettingsManager.setDarkMode(await SettingsManager.getDarkMode());
     use_shaka.checked = await SettingsManager.getUseShakaPackager();
     downloader_name.value = await SettingsManager.getExecutableName();
+    set_filename_from_title.checked = await SettingsManager.getSetFilenameFromTitle();
+    use_select_video.checked = await SettingsManager.getUseSelectVideo();
+    select_video_param.value = await SettingsManager.getSelectVideoParam();
+    use_select_audio.checked = await SettingsManager.getUseSelectAudio();
+    select_audio_param.value = await SettingsManager.getSelectAudioParam();
+
     await SettingsManager.setSelectedDeviceType(await SettingsManager.getSelectedDeviceType());
     await DeviceManager.loadSetAllWidevineDevices();
     await DeviceManager.selectWidevineDevice(await DeviceManager.getSelectedWidevineDevice());
