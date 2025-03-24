@@ -152,7 +152,7 @@ clear.addEventListener('click', async function() {
 async function createCommand(json, key_string, title) {
     const metadata = JSON.parse(json);
     const header_string = Object.entries(metadata.headers).map(([key, value]) => `-H "${key}: ${value.replace(/"/g, "'")}"`).join(' ');
-    return `${await SettingsManager.getExecutableName()} "${metadata.url}" ${header_string} ${key_string} ${await SettingsManager.getUseShakaPackager() ? "--use-shaka-packager " : ""}-M format=mkv${await SettingsManager.getSetFilenameFromTitle() && title ? " --save-name ".concat('"', title, '"') : ""}${await SettingsManager.getUseSelectVideo() ? " --select-video ".concat(await SettingsManager.getSelectVideoParam()) : ""}${await SettingsManager.getUseSelectAudio() ? " --select-Audio ".concat(await SettingsManager.getSelectAudioParam()) : ""}`;
+    return `${await SettingsManager.getExecutableName()} "${metadata.url}" ${header_string} ${key_string} ${await SettingsManager.getUseShakaPackager() ? "--use-shaka-packager " : ""}-M format=mkv${await SettingsManager.getSetFilenameFromTitle() && title ? " --save-name ".concat('"', title, '"') : ""}${await SettingsManager.getUseSelectVideo() ? " --select-video ".concat(await SettingsManager.getSelectVideoParam()) : ""}${await SettingsManager.getUseSelectAudio() ? " --select-audio ".concat(await SettingsManager.getSelectAudioParam()) : ""}`;
 }
 
 async function appendLog(result) {
